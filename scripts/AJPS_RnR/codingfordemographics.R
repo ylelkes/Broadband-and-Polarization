@@ -94,22 +94,28 @@ demos$fipscode <- as.numeric(demos$fipscode)
 
 demos <- merge(demos,unemployment,by.x="fipscode",by.y="region")
 save(demos,file="~/Dropbox/sharelatex/Broadband and Polarization/data/demographics.RData")
+load("data/demographics.RData")
 load("naesall_0408.RData")
+
+zip08 <- read.csv("data/miner/providers_ziplevel2008.csv")
+naes2008all$wfc06[naesall_0408$>=99998]=NA
+naeszip2008 <- merge(naes2008all,zip08,by.y="zipcode",by.x="wfc06",all.x=T)
 naesall <- merge(naesall_0408,demos,by="fipscode")
 
 naesall$providers <- NA
 naesall$providers[which(naesall$year==2004)]=naesall$providers_2004[which(naesall$year==2004)]
 naesall$providers[which(naesall$year==2008)]=naesall$providers_2008[which(naesall$year==2008)]
-
-
+naesall$infeels
+summary(lm(infeels-outfeels~log(BB_Index)+slope,naesall))
 naesall$unemployment <- NA
 naesall$unemployment[which(naesall$year==2004)]=naesall$unemployment_2004[which(naesall$year==2004)]
 naesall$unemployment[which(naesall$year==2008)]=naesall$unemployment_2008[which(naesall$year==2008)]
 
 naesall$incomecut <- as.factor(car::recode(naesall$incomecut,"NA=5"))
-naesall$education <- as.factor(car::recode(naesall$education,"NA='Missing'"))
+naesall$education <- as.character(naesall$education)
+naesall$education[is.na(naesall$education)]='Missing'
 naesall$agecut <- as.factor(car::recode(naesall$agecut,"NA='5'"))
-
+table(is.na(naesall_0408$education))
 naesall <- na.omit(with(naesall,data.frame(affpol=infeels-outfeels,providers_2004,providers_2008,percentmale,percentwhite,percentblack,percentasian,percentpoverty,Median_income,Median_age,college,somecollege,highschool,lessthanhs,popdensity2000,lbb=log(BB_Index),slope,year,Staten,Hispanic, Bachelors, Some_College, HS, Less_than_hs,fipscode,percenthispanic,percentwithkids,percentasian,unemployment,providers,meanel,agecut,incomecut,education,female)))
 
 
